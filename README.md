@@ -6,7 +6,7 @@ The tool does not change the files inside the app. It sets a custom Finder icon 
 
 ## How it works
 
-1. It loads the `AppIconLightPreview` image from the asset catalog of the installed app. This is the normal Rex icon without the BETA pill.
+1. It loads the `AppIconLightPreview` image from the asset catalog of the installed app, or `AppIconDarkPreview` with `dark`. This is the normal Rex icon without the BETA pill.
 2. It draws the image on a 1024 × 1024 canvas that follows the macOS icon grid.
 3. It sets the result as the custom icon of the app with `NSWorkspace.setIcon(_:forFile:)`.
 4. It restarts the Dock so that the Dock shows the new icon.
@@ -30,6 +30,7 @@ make install      # copies it to /usr/local/bin (use PREFIX=~/.local to change)
 
 ```sh
 rex-nobeta-icon                       # set the icon without the BETA pill
+rex-nobeta-icon dark                  # same, with the dark artwork
 rex-nobeta-icon --undo                # remove the custom icon
 rex-nobeta-icon --app "/path/to/Rex Beta.app"
 ```

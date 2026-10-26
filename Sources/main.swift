@@ -1,16 +1,18 @@
 // Replaces the Rex Beta app icon with the same gradient icon minus the BETA pill.
-// Usage: rex-nobeta-icon [--undo] [--app /path/to/Rex Beta.app]
+// Usage: rex-nobeta-icon [dark] [--undo] [--app /path/to/Rex Beta.app]
 import AppKit
 
 var appPath = "/Applications/Rex Beta.app"
+var dark = false
 var undo = false
 var args = CommandLine.arguments.dropFirst()
 while let a = args.popFirst() {
     switch a {
+    case "dark": dark = true
     case "--undo": undo = true
     case "--app": appPath = args.popFirst() ?? appPath
     case "-h", "--help":
-        print("Usage: rex-nobeta-icon [--undo] [--app /path/to/Rex Beta.app]")
+        print("Usage: rex-nobeta-icon [dark] [--undo] [--app /path/to/Rex Beta.app]")
         exit(0)
     default:
         FileHandle.standardError.write("Unknown argument: \(a)\n".data(using: .utf8)!)
@@ -41,11 +43,12 @@ if undo {
     exit(0)
 }
 
+let artName = dark ? "AppIconDarkPreview" : "AppIconLightPreview"
 guard let bundle = Bundle(path: appPath),
-      let src = bundle.image(forResource: "AppIconLightPreview"),
+      let src = bundle.image(forResource: artName),
       let tiff = src.tiffRepresentation,
       let bm = NSBitmapImageRep(data: tiff)
-else { fail("AppIconLightPreview not found in \(appPath)") }
+else { fail("\(artName) not found in \(appPath)") }
 
 // macOS icon grid: 824 px rounded body on a 1024 px canvas, nudged down slightly for the shadow.
 guard let out = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: 1024, pixelsHigh: 1024, bitsPerSample: 8,
@@ -67,4 +70,4 @@ guard NSWorkspace.shared.setIcon(icon, forFile: appPath, options: []) else {
     fail("could not set icon. Give your terminal App Management access in System Settings > Privacy & Security.")
 }
 refreshDock()
-print("Set non-beta icon on \(appPath). If the Dock still shows BETA while Rex runs, quit and reopen Rex.")
+print("Set \(dark ? "dark" : "non-beta") icon on \(appPath). If the Dock still shows BETA while Rex runs, quit and reopen Rex.")
